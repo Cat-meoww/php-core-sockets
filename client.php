@@ -18,7 +18,7 @@ if (!socket_connect($socket, $host, $port)) {
 }
 
 // Send data to the server
-$message = "Client: Hello, server!";
+$message = "Client: Hello, server bro!";
 socket_write($socket, $message, strlen($message));
 
 // Read the response from the server

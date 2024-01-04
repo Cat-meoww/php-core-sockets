@@ -38,7 +38,7 @@ while (true) {
     echo "Received from client: $data\n";
 
     // Send a response back to the client
-    $response = "Server: Hello, client!";
+    $response = "Server: Hello, client! dude";
     socket_write($clientSocket, $response, strlen($response));
 
     // Close the client socket

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
+        integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+
+    <input type="text" id="messageinput">
+
+    <script>
+
+
+        $(document).ready(() => {
+            const LOGGER = {
+                debug: false,
+                log(data, action = 'log') {
+                    wrapper = {
+                        Action: action,
+                        Message: data,
+                    }
+                    if (LOGGER.debug === false) return;
+                    console.log(data);
+                    connectedPorts.forEach((port) => port.postMessage(wrapper));
+                },
+            };
+            const Socket = {
+                conn: null,
+                token: null,
+                init() {
+                    Socket.Try2connect();
+                },
+                Try2connect: () => {
+                    Socket.conn = new WebSocket(`ws://localhost:8080?token=${Socket.token}`);
+                    Socket.conn.onopen = Socket.onopen;
+                    Socket.conn.onclose = Socket.onclose;
+                    Socket.conn.onerror = Socket.onerror;
+                    Socket.conn.onmessage = Socket.onmessage;
+                },
+                onopen: (e) => {
+                    LOGGER.log("Connection established!");
+                },
+                send(data) {
+                    try {
+                        Socket.conn.send(JSON.stringify(data));
+                    } catch (err) {
+                        LOGGER.log(err);
+                    }
+                },
+                onclose: (e) => {
+                    LOGGER.log("Connection closed");
+                },
+                onerror: (e) => {
+                    LOGGER.log("Failed to connect with chat server")
+                },
+                onmessage: (e) => {
+                    const package = JSON.parse(e.data);
+                    console.log(package); return;
+                    connectedPorts.forEach((port) => port.postMessage(package));
+                },
+                onTokenChange() {
+                    if (Socket.token != self.name) {
+                        Socket.token = self.name;
+                        console.log("TOKEN CHANGED");
+                        return Socket.init();
+                    }
+                }
+            }
+            Socket.init();
+
+
+            $('#messageinput').keypress(function (e) {
+                if (e.which == 13) {
+                    Socket.send($(this).val())
+                    return false;    //<---- Add this line
+                }
+            });
+        })
+
+    </script>
+</body>
+
+</html>

@@ -25,5 +25,9 @@ socket_write($socket, $message, strlen($message));
 $response = socket_read($socket, 1024);
 echo "Received from server: $response\n";
 
+
+$message = "Client: Bye, server bro!";
+socket_write($socket, $message, strlen($message));
+
 // Close the socket
 socket_close($socket);
